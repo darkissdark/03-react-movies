@@ -2,15 +2,15 @@ import css from "./MovieGrid.module.css";
 import type { Movie } from "../../types/movie";
 import { imageBasePath, fallbackImagePath } from "../../constants/paths";
 
-type MovieGridProps = {
-  data: Movie[];
-  onSelect: (movieId: number) => void;
-};
+interface MovieGridProps {
+  movies: Movie[];
+  onSelect: (movie: Movie) => void;
+}
 
-function MovieGrid({ data, onSelect }: MovieGridProps) {
+function MovieGrid({ movies, onSelect }: MovieGridProps) {
   return (
     <ul className={css.grid}>
-      {data.map((movie) => (
+      {movies.map((movie) => (
         <li key={movie.id}>
           <div className={css.card}>
             <img
@@ -19,7 +19,7 @@ function MovieGrid({ data, onSelect }: MovieGridProps) {
               alt={movie.title}
               loading="lazy"
               onClick={() => {
-                onSelect(movie.id);
+                onSelect(movie);
               }}
               onError={(e) => {
                 e.currentTarget.src = fallbackImagePath(

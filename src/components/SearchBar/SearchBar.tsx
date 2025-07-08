@@ -1,28 +1,26 @@
 import styles from "./SearchBar.module.css";
-import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
 interface SearchBarProps {
   onSubmit: (query: string) => void;
 }
 
-const emptyQueryMessage = () => toast("Please enter your search query.");
-
 function SearchBar({ onSubmit }: SearchBarProps) {
-  const [query, setQuery] = useState("");
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (query.trim()) {
-      onSubmit(query);
-    } else {
-      emptyQueryMessage();
+  async function action(formData: FormData) {
+    const getQuery = formData.get("query");
+    if (typeof getQuery !== "string") {
+      toast("Expected query to be a string.");
+      return;
     }
-  };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-  };
+    const query = getQuery.trim();
+    if (!query) {
+      toast("Please enter your search query.");
+      return;
+    }
+
+    onSubmit(query);
+  }
 
   return (
     <header className={styles.header}>
@@ -35,7 +33,7 @@ function SearchBar({ onSubmit }: SearchBarProps) {
         >
           Powered by TMDB
         </a>
-        <form className={styles.form} onSubmit={handleSubmit}>
+        <form className={styles.form} action={action}>
           <input
             className={styles.input}
             type="text"
@@ -43,7 +41,6 @@ function SearchBar({ onSubmit }: SearchBarProps) {
             autoComplete="off"
             placeholder="Search movies..."
             autoFocus
-            onChange={handleChange}
           />
           <button className={styles.button} type="submit">
             Search

@@ -1,9 +1,16 @@
-import api from "../api/request";
-import type { AxiosResponse } from "axios";
-import type { MovieResponse } from "../types/movie";
+import axios from "axios";
+import { apiBasePath } from "../constants/paths";
+import type { Movie } from "../types/movie";
 
-export async function fetchMovies(query: string): Promise<MovieResponse> {
-  const response: AxiosResponse<MovieResponse> = await api.get("movie", {
+const api = axios.create({
+  baseURL: apiBasePath,
+  headers: {
+    Authorization: `Bearer ${import.meta.env.VITE_TMDB_TOKEN}`,
+  },
+});
+
+export async function fetchMovies(query: string): Promise<Movie[]> {
+  const response = await api.get<{ results: Movie[] }>("movie", {
     params: {
       query,
       include_adult: false,
@@ -12,5 +19,5 @@ export async function fetchMovies(query: string): Promise<MovieResponse> {
     },
   });
 
-  return response.data;
+  return response.data.results;
 }

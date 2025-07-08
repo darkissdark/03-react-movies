@@ -16,14 +16,15 @@ const App = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
   const handleSearch = useCallback((searchQuery: string) => {
     setQuery(searchQuery.trim());
+    setMovies([]);
   }, []);
 
   const handleCloseModal = () => {
-    setSelectedMovieId(null);
+    setSelectedMovie(null);
   };
 
   useEffect(() => {
@@ -34,13 +35,13 @@ const App = () => {
       setError(false);
 
       try {
-        const data = await fetchMovies(query);
+        const results = await fetchMovies(query);
 
-        if (!data.results.length) {
+        if (!results.length) {
           toast("No movies found for your request.");
         }
 
-        setMovies(data.results);
+        setMovies(results);
       } catch (err) {
         console.error("Failed to fetch movies:", err);
         setError(true);
@@ -53,8 +54,6 @@ const App = () => {
     loadMovies();
   }, [query]);
 
-  const selectedMovie = movies.find((movie) => movie.id === selectedMovieId);
-
   return (
     <div className={css.app}>
       <SearchBar onSubmit={handleSearch} />
@@ -62,10 +61,10 @@ const App = () => {
       {loading && <Loader />}
       {!loading && error && <ErrorMessage />}
       {!loading && !error && movies.length > 0 && (
-        <MovieGrid data={movies} onSelect={setSelectedMovieId} />
+        <MovieGrid movies={movies} onSelect={setSelectedMovie} />
       )}
 
-      {selectedMovieId && selectedMovie && (
+      {selectedMovie && (
         <MovieModal movie={selectedMovie} onClose={handleCloseModal} />
       )}
 
