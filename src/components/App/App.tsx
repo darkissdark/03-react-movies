@@ -35,13 +35,13 @@ const App = () => {
       setError(false);
 
       try {
-        const results = await fetchMovies(query);
+        const response = await fetchMovies(query);
 
-        if (!results.length) {
+        if (!response.results.length) {
           toast("No movies found for your request.");
         }
 
-        setMovies(results);
+        setMovies(response.results);
       } catch (err) {
         console.error("Failed to fetch movies:", err);
         setError(true);
