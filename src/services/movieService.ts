@@ -1,6 +1,6 @@
 import axios from "axios";
 import { apiBasePath } from "../constants/paths";
-import type { MovieSearchResponse } from "../types/movie";
+import type { Movie } from "../types/movie";
 
 const api = axios.create({
   baseURL: apiBasePath,
@@ -8,6 +8,13 @@ const api = axios.create({
     Authorization: `Bearer ${import.meta.env.VITE_TMDB_TOKEN}`,
   },
 });
+
+interface MovieSearchResponse {
+  results: Movie[];
+  page: number;
+  total_pages: number;
+  total_results: number;
+}
 
 export async function fetchMovies(query: string): Promise<MovieSearchResponse> {
   const response = await api.get<MovieSearchResponse>("movie", {
